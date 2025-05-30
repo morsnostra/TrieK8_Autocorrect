@@ -4,8 +4,16 @@ public class Trie implements ITrie {
 
    // root node => semua kata akan dimulai dari sini
    private TrieNode root = new TrieNode();
-   
-   // Cache hash code untuk efisiensi - dihitung secara incremental
+   /* contoh
+      root (TrieNode)
+      ├── nodes[0] = null (untuk 'a')
+      ├── nodes[1] = null (untuk 'b')  
+      ├── nodes[2] = null (untuk 'c')
+      ├── ...
+      └── nodes[25] = null (untuk 'z')
+    */
+    
+   // insialisasi
    private int myHashCode = 0;
 
    // constructor 
@@ -33,30 +41,29 @@ public class Trie implements ITrie {
       }
 
       // update hash code dengan menambahkan hash code dari kata baru
-      // ini memungkinkan perhitungan hash code yang efisien tanpa rekalkulasi
       this.myHashCode += word.hashCode();
       
-      // Increment frekuensi kata di node terakhir
+      // increment frekuensi sebuah kata di node terakhir
       p.incrementValue();
 
-      // Tandai bahwa node ini adalah akhir dari sebuah kata
+      // node ini adalah akhir dari sebuah kata
       p.isEnd = true;
    }
 
-   // Implementasi find() - mencari kata dalam trie
+   // implementasi find() 
    public INode find(String word) {
       TrieNode p = this.root;
 
-       // Traverse trie mengikuti path yang dibentuk oleh karakter-karakter kata
+       // traverse trie mengikuti path yang dibentuk oleh karakter-karakter kata
       for(char c : word.toCharArray()) {
-         int index = c - 97; // Konversi ke index array
+         int index = c - 97; // lonversi ke index array
 
-         // Jika path tidak ada, kata tidak ditemukan
+         // jika path tidak ada, kata tidak ditemukan
          if (p.nodes[index] == null) {
             return null;
          }
 
-         // Lanjut ke child node
+         // lanjut ke child node
          p = p.nodes[index];
       }
 
@@ -73,37 +80,37 @@ public class Trie implements ITrie {
    // method rekursif untuk menghitung node
    private int countNodesInTrie(TrieNode node) {
       if (node == null) {
-         return 0; // Base case: node null tidak dihitung
+         return 0; // base case: node null tidak dihitung
       }
       
       int count = 0;
 
-      // Rekursif hitung semua child nodes
+      // rekursif hitung semua child nodes
       for(int i = 0; i < 26; ++i) {
          if (node.nodes[i] != null) {
             count += this.countNodesInTrie(node.nodes[i]);
          }
       }
 
-      // Return 1 (node saat ini) + jumlah semua child nodes
+      // return 1 (node saat ini) + jumlah semua child nodes
       return 1 + count;
    }
 
-   // Implementasi getWordCount() - menghitung jumlah kata unik
+   // implementasi getWordCount() - menghitung jumlah kata unik
    public int getWordCount() {
       return this.wordCount(this.root);
    }
 
-   // Helper method rekursif untuk menghitung kata
+   // helper method rekursif untuk menghitung kata
    private int wordCount(TrieNode root) {
       int result = 0;
 
-      // Jika node ini adalah akhir kata, hitung sebagai 1 kata
+      // jika node ini adalah akhir kata, hitung sebagai 1 kata
       if (root.isEnd) {
          ++result;
       }
 
-      // Rekursif hitung kata di semua child nodes
+      // rekursif hitung kata di semua child nodes
       for(int i = 0; i < 26; ++i) {
          if (root.nodes[i] != null) {
             result += this.wordCount(root.nodes[i]);
@@ -126,21 +133,21 @@ public class Trie implements ITrie {
       return sb.toString().length() == 0 ? "" : sb.toString().substring(1);
    }
 
-   // Helper method rekursif untuk print semua kata
+   // helper method rekursif untuk print semua kata
    private void printAllWords(TrieNode root, char[] wordArray, int pos, StringBuilder sb) {
       if (root != null) {
-          // Jika ini akhir kata, tambahkan ke StringBuilder
+          // jika ini akhir kata, tambahkan ke StringBuilder
          if (root.isEnd) {
-            // Newline sebagai separator
+            // nwwline sebagai separator
             sb.append("\n");
 
-            // Tambahkan karakter-karakter yang membentuk kata
+            // tambahkan karakter-karakter yang membentuk kata
             for(int i = 0; i < pos; ++i) {
                sb.append(wordArray[i]);
             }
          }
 
-         // Rekursif traverse semua child nodes
+         // rekursif traverse semua child nodes
          for(int i = 0; i < 26; ++i) {
             if (root.nodes[i] != null) {
                // Tambahkan karakter saat ini ke wordArray
@@ -153,59 +160,59 @@ public class Trie implements ITrie {
       }
    }
 
-    // Implementasi hashCode() - return cached hash code
+    // implementasi hashCode() - return cached hash code
    public int hashCode() {
       return this.myHashCode;
    }
 
-   // Implementasi equals() - membandingkan dua trie
+   // implementasi equals() - membandingkan dua trie
    public boolean equals(Object o) {
-       // Type checking dengan instanceof
+       // type checking dengan instanceof
       if (o instanceof Trie) {
-         // Safe cast karena sudah dicek
+         // safe cast karena sudah dicek
          Trie s = (Trie)o;
 
-         // Quick check: jika jumlah node berbeda, pasti tidak sama
+         // quick check: jika jumlah node berbeda, pasti tidak sama
          if (this.getNodeCount() != s.getNodeCount()) {
             return false;
          }
 
-         // Quick check: jika jumlah kata berbeda, pasti tidak sama
+         // quick check: jika jumlah kata berbeda, pasti tidak sama
          if (this.getWordCount() != s.getWordCount()) {
             return false;
          }
 
-         // Deep comparison menggunakan helper method
+         // deep comparison menggunakan helper method
          return this.compareTrie(this, s);
       }
-      return false; // Bukan instance dari Trie
+      return false; // bukan instance dari Trie
    }
 
-    // Helper method untuk membandingkan dua trie secara detail
+    // helper method untuk membandingkan dua trie secara detail
    private boolean compareTrie(Trie p, Trie q) {
       String s1 = p.toString();
       String s2 = q.toString();
 
-      // Jika kedua trie kosong, mereka sama
+      // jika kedua trie kosong, mereka sama
       if (s1.equals("") && s2.equals("")) {
          return true;
       }
       
-      // Split string menjadi array kata
+      // split string menjadi array kata
       String[] strs1 = s1.split("\n");
       String[] strs2 = s2.split("\n");
 
-      // Jika jumlah kata berbeda, tidak sama
+      // jika jumlah kata berbeda, tidak sama
       if (strs1.length != strs2.length) {
          return false;
       }
       
-      // Periksa setiap kata dan frekuensinya
+      // periksa setiap kata dan frekuensinya
       for(String s : strs1) {
          INode node1 = p.find(s);
          INode node2 = q.find(s);
 
-         // Jika frekuensi kata berbeda, tidak sama
+         // jika frekuensi kata berbeda, tidak sama
          if (node1.getValue() != node2.getValue()) {
             return false;
          }
