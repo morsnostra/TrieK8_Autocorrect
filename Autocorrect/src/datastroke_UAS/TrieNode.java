@@ -41,8 +41,8 @@ public class TrieNode implements INode {
    public TrieNode() {
    }
 
-   /* Constructor kosong (default constructor)
-      Semua field diinisialisasi dengan nilai default:
+   /* constructor kosong (default constructor)
+      semua field diinisialisasi dengan nilai default:
       nodes = array 26 slot berisi null
       count = 0
       isEnd = false 
