@@ -2,35 +2,35 @@ package datastroke_UAS;
 
 public class Trie implements ITrie {
    private TrieNode root = new TrieNode();
-   private int myHashCode = 0;
+   private int trieHashCode = 0;
 
    public Trie() {
    }
 
    public void add(String word) {
-      TrieNode p = this.root;
-      for(char c : word.toCharArray()) {
-         if (p.nodes[c - 97] == null) {
-            p.nodes[c - 97] = new TrieNode();
+      TrieNode currentNode = this.root;
+      for(char character : word.toCharArray()) {
+         if (currentNode.nodes[character - 97] == null) {
+            currentNode.nodes[character - 97] = new TrieNode();
          }
-         p = p.nodes[c - 97];
+         currentNode = currentNode.nodes[character - 97];
       }
 
-      this.myHashCode += word.hashCode();
-      p.incrementValue();
-      p.isEnd = true;
+      this.trieHashCode += word.hashCode();
+      currentNode.incrementValue();
+      currentNode.isEnd = true;
    }
 
    public INode find(String word) {
-      TrieNode p = this.root;
-      for(char c : word.toCharArray()) {
-         if (p.nodes[c - 97] == null) {
+      TrieNode currentNode = this.root;
+      for(char character : word.toCharArray()) {
+         if (currentNode.nodes[character - 97] == null) {
             return null;
          }
-         p = p.nodes[c - 97];
+         currentNode = currentNode.nodes[character - 97];
       }
 
-      return p != null && p.isEnd ? p : null;
+      return currentNode != null && currentNode.isEnd ? currentNode : null;
    }
 
    public int getNodeCount() {
@@ -74,6 +74,7 @@ public class Trie implements ITrie {
    public String toString() {
       char[] wordArray = new char[50];
       StringBuilder sb = new StringBuilder();
+
       this.printAllWords(this.root, wordArray, 0, sb);
       return sb.toString().length() == 0 ? "" : sb.toString().substring(1);
    }
@@ -97,7 +98,7 @@ public class Trie implements ITrie {
    }
 
    public int hashCode() {
-      return this.myHashCode;
+      return this.trieHashCode;
    }
 
    public boolean equals(Object o) {
@@ -114,22 +115,22 @@ public class Trie implements ITrie {
       return false;
    }
 
-   private boolean compareTrie(Trie p, Trie q) {
-      String s1 = p.toString();
-      String s2 = q.toString();
-      if (s1.equals("") && s2.equals("")) {
+   private boolean compareTrie(Trie parameter1, Trie parameter2) {
+      String string1 = parameter1.toString();
+      String string2 = parameter2.toString();
+      if (string1.equals("") && string2.equals("")) {
          return true;
       }
       
-      String[] strs1 = s1.split("\n");
-      String[] strs2 = s2.split("\n");
-      if (strs1.length != strs2.length) {
+      String[] words1 = string1.split("\n");
+      String[] words2 = string2.split("\n");
+      if (words1.length != words2.length) {
          return false;
       }
       
-      for(String s : strs1) {
-         INode node1 = p.find(s);
-         INode node2 = q.find(s);
+      for(String word : words1) {
+         INode node1 = parameter1.find(word);
+         INode node2 = parameter2.find(word);
          if (node1.getValue() != node2.getValue()) {
             return false;
          }
