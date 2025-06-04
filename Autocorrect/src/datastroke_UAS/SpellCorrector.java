@@ -83,19 +83,23 @@ public class SpellCorrector implements ISpellCorrector {
       String searchWord = inputWord.toLowerCase();
       String suggestionResult = null;
 
-      // nested treemap buat sorting: distance -> frequency -> kata (alphabetical)
-      TreeMap<Integer, TreeMap<Integer, TreeSet<String>>> map = new TreeMap<>();
+      // Outer TreeMap  : Key = edit distance (int),    Value = TreeMap
+      // Middle TreeMap : Key = frequency (int),        Value = TreeSet
+      // Inner TreeSet  : Berisi kata-kata yang terurut scr alfabetis
+      TreeMap<Integer, TreeMap<Integer, TreeSet<String>>> map = new TreeMap<>(); 
       INode node = this.trie.find(searchWord); // cek dulu apakah kata ada di dictionary
       
       if (node == null) {
-         // Word not found in dictionary, find similar words
+          // kata ga ketemu, cari kata yang mirip
          Iterator<String> iterator = this.wordFrequency.keySet().iterator();
          
+         // loop semua kata di dictionary
          while(iterator.hasNext()) {
 
-            String candidateWord = iterator.next();
-            int dist = this.editDistance(candidateWord, searchWord);
+            String candidateWord = iterator.next(); // ambil kata candidate
+            int dist = this.editDistance(candidateWord, searchWord); // hitung edit distance antara input sama candidate
 
+            
             TreeMap<Integer, TreeSet<String>> similarWords = map.getOrDefault(dist, new TreeMap<>());
             int freq = this.wordFrequency.get(candidateWord);
 
