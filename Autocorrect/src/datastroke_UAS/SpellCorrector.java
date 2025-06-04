@@ -12,56 +12,80 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+// implementasi utama spell checker, kombinasi trie sama edit distance algorithm
 public class SpellCorrector implements ISpellCorrector {
+
+   // trie buat simpan semua kata dictionary 
    private Trie trie = new Trie();
+
+   // hashmap buat track frekuensi kata (berapa kali muncul di dictionary)
    private Map<String, Integer> wordFrequency = new HashMap<>();
+
+   // daftar input yang dianggep invalid, langsung di-reject
    private static final List<String> invalidInput = Arrays.asList("lol", "abcdefghijklmnopqrstuvwxyz");
 
+   // constructor kosong, field udah auto-initialized
    public SpellCorrector() {
    }
 
+   // load dictionary dari file text
    public void useDictionary(String dictionaryFileName) throws IOException {
       try {
+         // setup file reader buat baca dictionary
          FileReader fr = new FileReader(dictionaryFileName);
          BufferedReader br = new BufferedReader(fr);
          String currentLine = null;
 
+         // baca file line by line
          while((currentLine = br.readLine()) != null) {
-            String cleanWord = currentLine.toLowerCase();
+            String cleanWord = currentLine.toLowerCase(); // convert ke lowercase supaya konsisten
+            
+            // cek apakah line ini single word atau multiple words
             if (!currentLine.contains(" ")) {
+
+               // kalo single word langsung masukin ke frequency map sama trie
                this.wordFrequency.put(cleanWord, this.wordFrequency.getOrDefault(cleanWord, 0) + 1);
                this.trie.add(cleanWord);
+
             } else {
+               // kalo multiple words split dulu baru masukin satu-satu
                String[] splittedString = currentLine.split("\\s");
+
                for(String singleString : splittedString) {
                   String cleanStr = singleString.toLowerCase();
+                  // update frequency counter & masukin ke trie
                   this.wordFrequency.put(cleanStr, this.wordFrequency.getOrDefault(cleanStr, 0) + 1);
-                  this.trie.add(cleanStr);
+                  this.trie.add(cleanStr); 
                }
             }
          }
-         
+         // tutup file readers
          fr.close();
          br.close();
       } catch (FileNotFoundException ex) {
-         System.err.println("File not found: " + ex.getMessage());
+         System.err.println("File not found: " + ex.getMessage()); // handle file ga ketemu
          throw ex;
       } catch (IOException ex) {
-         System.err.println("IO Exception: " + ex.getMessage());
+         System.err.println("IO Exception: " + ex.getMessage()); // handle error IO lainnya
          throw ex;
       }
    }
 
+   // fungsi utama spell checker => kasih saran kata yang mirip
    public String suggestSimilarWord(String inputWord) {
+
+      // validasi input: null, kosong, atau masuk daftar invalid
       if (inputWord == null || inputWord.length() == 0 || invalidInput.contains(inputWord.toLowerCase())) {
          return null;
       }
       
+      // convert input ke lowercase
       String searchWord = inputWord.toLowerCase();
       String suggestionResult = null;
 
+      // nested treemap buat sorting: distance -> frequency -> kata (alphabetical)
       TreeMap<Integer, TreeMap<Integer, TreeSet<String>>> map = new TreeMap<>();
-      INode node = this.trie.find(searchWord);
+      INode node = this.trie.find(searchWord); // cek dulu apakah kata ada di dictionary
       
       if (node == null) {
          // Word not found in dictionary, find similar words
