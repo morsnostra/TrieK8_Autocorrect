@@ -14,8 +14,8 @@ import java.util.TreeSet;
 
 public class SpellCorrector implements ISpellCorrector {
    private Trie trie = new Trie();
-   private Map<String, Integer> dict = new HashMap<>();
-   private static final List<String> invalid = Arrays.asList("lol", "abcdefghijklmnopqrstuvwxyz");
+   private Map<String, Integer> wordFrequency = new HashMap<>();
+   private static final List<String> invalidInput = Arrays.asList("lol", "abcdefghijklmnopqrstuvwxyz");
 
    public SpellCorrector() {
    }
@@ -24,18 +24,18 @@ public class SpellCorrector implements ISpellCorrector {
       try {
          FileReader fr = new FileReader(dictionaryFileName);
          BufferedReader br = new BufferedReader(fr);
-         String line = null;
+         String currentLine = null;
 
-         while((line = br.readLine()) != null) {
-            String word = line.toLowerCase();
-            if (!line.contains(" ")) {
-               this.dict.put(word, this.dict.getOrDefault(word, 0) + 1);
-               this.trie.add(word);
+         while((currentLine = br.readLine()) != null) {
+            String cleanWord = currentLine.toLowerCase();
+            if (!currentLine.contains(" ")) {
+               this.wordFrequency.put(cleanWord, this.wordFrequency.getOrDefault(cleanWord, 0) + 1);
+               this.trie.add(cleanWord);
             } else {
-               String[] strs = line.split("\\s");
-               for(String str : strs) {
-                  String cleanStr = str.toLowerCase();
-                  this.dict.put(cleanStr, this.dict.getOrDefault(cleanStr, 0) + 1);
+               String[] splittedString = currentLine.split("\\s");
+               for(String singleString : splittedString) {
+                  String cleanStr = singleString.toLowerCase();
+                  this.wordFrequency.put(cleanStr, this.wordFrequency.getOrDefault(cleanStr, 0) + 1);
                   this.trie.add(cleanStr);
                }
             }
@@ -53,38 +53,43 @@ public class SpellCorrector implements ISpellCorrector {
    }
 
    public String suggestSimilarWord(String inputWord) {
-      if (inputWord == null || inputWord.length() == 0 || invalid.contains(inputWord.toLowerCase())) {
+      if (inputWord == null || inputWord.length() == 0 || invalidInput.contains(inputWord.toLowerCase())) {
          return null;
       }
       
-      String s = inputWord.toLowerCase();
-      String res = null;
+      String searchWord = inputWord.toLowerCase();
+      String suggestionResult = null;
+
       TreeMap<Integer, TreeMap<Integer, TreeSet<String>>> map = new TreeMap<>();
-      INode node = this.trie.find(s);
+      INode node = this.trie.find(searchWord);
       
       if (node == null) {
          // Word not found in dictionary, find similar words
-         Iterator<String> iterator = this.dict.keySet().iterator();
+         Iterator<String> iterator = this.wordFrequency.keySet().iterator();
+         
          while(iterator.hasNext()) {
-            String w = iterator.next();
-            int dist = this.editDistance(w, s);
+
+            String candidateWord = iterator.next();
+            int dist = this.editDistance(candidateWord, searchWord);
+
             TreeMap<Integer, TreeSet<String>> similarWords = map.getOrDefault(dist, new TreeMap<>());
-            int freq = this.dict.get(w);
+            int freq = this.wordFrequency.get(candidateWord);
+
             TreeSet<String> set = similarWords.getOrDefault(freq, new TreeSet<>());
-            set.add(w);
+            set.add(candidateWord);
             similarWords.put(freq, set);
             map.put(dist, similarWords);
          }
          
          if (!map.isEmpty()) {
-            res = map.firstEntry().getValue().lastEntry().getValue().first();
+            suggestionResult = map.firstEntry().getValue().lastEntry().getValue().first();
          }
       } else {
          // Word found in dictionary
-         res = s;
+         suggestionResult = searchWord;
       }
 
-      return res;
+      return suggestionResult;
    }
 
    private int editDistance(String word1, String word2) {
