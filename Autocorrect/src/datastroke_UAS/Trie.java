@@ -3,9 +3,8 @@ package datastroke_UAS;
 // implementasi utama trie 
 public class Trie implements ITrie {
    
-   private TrieNode root = new TrieNode(); // semua kata mulai dari root
-   
-   private int trieHashCode = 0; // hash code trie buat equals comparison, diupdate tiap add kata
+   private TrieNode root = new TrieNode();   // semua kata mulai dari root
+   private int trieHashCode = 0;             // hash code trie buat equals comparison, diupdate tiap add kata
 
    // constructor kosong karena field udah di-initialize di atas (root sama trieHashCode)
    public Trie() {
@@ -13,8 +12,7 @@ public class Trie implements ITrie {
 
    // masukin kata baru ke trie
    public void add(String word) {
-
-      TrieNode currentNode = this.root; // mulai dari root node (this. buat akses field instance)
+      TrieNode currentNode = this.root; // mulai dari root node
 
       // jalan dari root sampe ujung kata, buat node baru kalo belum ada
       for(char character : word.toCharArray()) {
@@ -28,22 +26,18 @@ public class Trie implements ITrie {
          currentNode = currentNode.nodes[indeks];
       }
 
-      this.trieHashCode += word.hashCode(); // update hash code trie buat keperluan equals
-
-      currentNode.incrementValue(); // tambah counter kata di node terakhi
-
-      currentNode.isEnd = true; // tandain ini akhir kata
+      this.trieHashCode += word.hashCode();  // update hash code trie buat keperluan equals
+      currentNode.incrementValue();          // tambah counter kata di node terakhir
+      currentNode.isEnd = true;              // tandain ini akhir kata
    }
 
    // cari kata di trie, return nodenya kalo ketemu
    public INode find(String word) {
-
       TrieNode currentNode = this.root; // mulai dari root node
 
       // dari root ikutin path kata
       for(char character : word.toCharArray()) {
          int indeks = character - 97;
-
          // kalo path ga ada, kata ga ketemu
          if (currentNode.nodes[indeks] == null) {
             return null;
@@ -51,7 +45,6 @@ public class Trie implements ITrie {
          // lanjut ke node selanjutnya
          currentNode = currentNode.nodes[indeks];
       }
-
       return currentNode != null && currentNode.isEnd ? currentNode : null;  // pastiin ini beneran akhir kata, bukan cuma prefix
    }
 
@@ -65,9 +58,7 @@ public class Trie implements ITrie {
       if (node == null) {  // base case => node null
          return 0;
       }
-      
-      int count = 0; // counter buat child node
-
+      int count = 0;
       // cek semua 26 child node
       for(int i = 0; i < 26; ++i) {
          // kalo child node ada, hitung rekursif
@@ -75,7 +66,6 @@ public class Trie implements ITrie {
             count += this.countNodesInTrie(node.nodes[i]);
          }
       }
-
       return 1 + count; // return total child node + node sekarang
    }
 
@@ -86,14 +76,11 @@ public class Trie implements ITrie {
 
    // method rekursif untuk hitung kata
    private int wordCount(TrieNode root) {
-
-      int result = 0; // counter kata
-
+      int result = 0; 
       // kalo di node ini ada kata yang berakhir, count++
       if (root.isEnd) {
          ++result;
       }
-
       // lanjut ke semua child node
       for(int i = 0; i < 26; ++i) {
          // kalo child node ada, hitung rekursif
@@ -101,7 +88,6 @@ public class Trie implements ITrie {
             result += this.wordCount(root.nodes[i]);
          }
       }
-
       return result; // return total kata
    }
 
@@ -109,32 +95,26 @@ public class Trie implements ITrie {
    public String toString() {
       char[] wordArray = new char[50]; // buffer buat build kata
       StringBuilder sb = new StringBuilder();
-
       this.printAllWords(this.root, wordArray, 0, sb);
-
-      // buang newline pertama kalo ada
-      return sb.toString().length() == 0 ? "" : sb.toString().substring(1);
+      return sb.toString().length() == 0 ? "" : sb.toString().substring(1); // buang newline pertama kalo ada
    }
 
    // method rekursif untuk print semua kata
    private void printAllWords(TrieNode root, char[] wordArray, int pos, StringBuilder sb) {
       if (root != null) {
-          // kalo di sini ada kata yang berakhir, print ke stringbuilder
+         // kalo di sini ada kata yang berakhir, print ke stringbuilder
          if (root.isEnd) {
             sb.append("\n");
             for(int i = 0; i < pos; ++i) {
                sb.append(wordArray[i]);
             }
          }
-
          // lanjut ke semua child node dengan nambah karakter
          for(int i = 0; i < 26; ++i) {
             // kalo child node ada
             if (root.nodes[i] != null) {
-               // convert index ke karakte
-               wordArray[pos] = (char)(i + 97);
-               // rekursif ke child node dengan posisi +1
-               this.printAllWords(root.nodes[i], wordArray, pos + 1, sb);
+               wordArray[pos] = (char)(i + 97); // convert index ke karakter
+               this.printAllWords(root.nodes[i], wordArray, pos + 1, sb);  // rekursif ke child node dgn posisi +1
             }
          }
       }
@@ -145,7 +125,7 @@ public class Trie implements ITrie {
       return this.trieHashCode;
    }
 
-    // bandingin dua trie apakah sama
+   // bandingin dua trie apakah sama
    public boolean equals(Object o) {
       if (o instanceof Trie) {
          Trie s = (Trie)o;
@@ -169,7 +149,7 @@ public class Trie implements ITrie {
       String string1 = parameter1.toString();
       String string2 = parameter2.toString();
 
-       // edge case: kedua trie kosong
+       // edge case kedua trie kosong
       if (string1.equals("") && string2.equals("")) {
          return true;
       }
