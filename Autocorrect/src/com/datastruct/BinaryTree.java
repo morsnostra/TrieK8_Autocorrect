@@ -6,9 +6,6 @@ package com.datastruct;
  * 
  */
 
- 
- 
-
 public class BinaryTree<K, V>{
 
     public void printInOrder(BTNode<K,V> node) {    
