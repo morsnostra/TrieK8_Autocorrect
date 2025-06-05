@@ -3,7 +3,7 @@ package datastroke_UAS;
 
 // interface buat representasi node di dalam trie
 // setiap node bisa nyimpen berapa kali kata muncul (frekuensi) 
-// dan bisa punya children node
+// dan bisa punya child node
 
 public interface INode {
     // buat dapetin berapa kali kata ini muncul (frekuensi) di dictionary  
@@ -12,6 +12,6 @@ public interface INode {
     // buat nambah counter kata ini (dipanggil tiap ada kata yang sama)
     void incrementValue();
 
-    // buat dapat array children dari node ini (buat navigasi ke karakter selanjutnya)
+    // buat dapat array child node (untuk jalan ke karakter berikutnya)
     INode[] getChildren();
 }
