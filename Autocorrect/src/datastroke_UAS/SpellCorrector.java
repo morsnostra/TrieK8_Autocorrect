@@ -9,8 +9,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import com.datastruct.Heap;
 
 // implementasi utama spell checker, kombinasi trie sama algoritma edit distance 
 public class SpellCorrector implements ISpellCorrector {
@@ -20,7 +19,7 @@ public class SpellCorrector implements ISpellCorrector {
    // hashmap buat track frekuensi kata (berapa kali muncul di dictionary)
    private Map<String, Integer> wordFrequency = new HashMap<>();
    // daftar input yang dianggep invalid, langsung di-reject
-   private static final List<String> invalidInput = Arrays.asList("lol", "abcdefghijklmnopqrstuvwxyz");
+   private static final List<String> invalidInput = Arrays.asList("lol", "abcdefghijklmnopqrstuvwxyz,"); 
 
    // constructor kosong, field udah auto-initialized
    public SpellCorrector() {
@@ -81,7 +80,10 @@ public class SpellCorrector implements ISpellCorrector {
       // Outer TreeMap  : Key = edit distance (int),    Value = TreeMap
       // Middle TreeMap : Key = frequency (int),        Value = TreeSet
       // Inner TreeSet  : Berisi kata-kata yang terurut scr alfabetis
-      TreeMap<Integer, TreeMap<Integer, TreeSet<String>>> map = new TreeMap<>(); 
+      // TreeMap<Integer, TreeMap<Integer, TreeSet<String>>> map = new TreeMap<>(); 
+
+      // jadi heap
+      Heap<Integer, String> heap = new Heap<>(wordFrequency.size(), true); // min-heap berdasarkan edit distance
 
       INode node = this.trie.find(searchWord); // cek dulu apakah kata ada di dictionary
       
@@ -93,29 +95,44 @@ public class SpellCorrector implements ISpellCorrector {
          while(iterator.hasNext()) {
 
             // ambil kata candidate, hitung edit distance antara input & candidate
-            String candidateWord = iterator.next(); 
-            int dist = this.editDistance(candidateWord, searchWord); 
+            //String candidateWord = iterator.next(); 
+            //int dist = this.editDistance(candidateWord, searchWord); 
 
             // dapetin atau buat treemap buat distance ini
-            TreeMap<Integer, TreeSet<String>> similarWords = map.getOrDefault(dist, new TreeMap<>());
+            //TreeMap<Integer, TreeSet<String>> similarWords = map.getOrDefault(dist, new TreeMap<>());
 
             // dapetin frekuensi kata candidate
-            int freq = this.wordFrequency.get(candidateWord); 
+            //int freq = this.wordFrequency.get(candidateWord); 
 
             // dapetin atau buat treeset buat frequency ini
-            TreeSet<String> set = similarWords.getOrDefault(freq, new TreeSet<>());
+            //TreeSet<String> set = similarWords.getOrDefault(freq, new TreeSet<>());
 
             // masukin kata ke set
-            set.add(candidateWord);  
+            //set.add(candidateWord);  
 
             // update nested map structure
-            similarWords.put(freq, set);
-            map.put(dist, similarWords);
+            //similarWords.put(freq, set);
+            //map.put(dist, similarWords);
+
+            String candidateWord = iterator.next();
+            int dist = this.editDistance(candidateWord, searchWord);
+            int freq = this.wordFrequency.get(candidateWord);
+
+            // Kombinasikan jarak edit dan -frekuensi supaya min-heap bisa urut: 
+            // jarak terendah + frekuensi tertinggi + urutan abjad
+            int compositeKey = dist * 1_000_000 - freq; // jarak lebih penting, freq dikurangi (negatif)
+            heap.insert(compositeKey, candidateWord);
          }
          // ambil hasil => 1.distance terkecil, 2.frequency tertinggi, 3.kata pertama alphabetically
-         if (!map.isEmpty()) {
-            suggestionResult = map.firstEntry().getValue().lastEntry().getValue().first();
+         //if (!map.isEmpty()) {
+            //suggestionResult = map.firstEntry().getValue().lastEntry().getValue().first();
+         //}
+
+         // Ambil hasil dari heap:
+         if (heap.size() > 0) {
+            suggestionResult = heap.removeFirst().getData(); // data = kata
          }
+
       } else {
          suggestionResult = searchWord;  // kata ketemu di dictionary, return aja 
       }
