@@ -1,15 +1,14 @@
 package datastroke_UAS;
 
+import com.datastruct.Heap;
+import com.datastruct.MyArrayList;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import com.datastruct.Heap;
 
 // implementasi utama spell checker, kombinasi trie sama algoritma edit distance 
 public class SpellCorrector implements ISpellCorrector {
@@ -18,8 +17,19 @@ public class SpellCorrector implements ISpellCorrector {
    private Trie trie = new Trie();
    // hashmap buat track frekuensi kata (berapa kali muncul di dictionary)
    private Map<String, Integer> wordFrequency = new HashMap<>();
+
+   // sebelumnya ini, hrs import java.util.Arrays & import java.util.List
+   // private static final List<String> invalidInput = Arrays.asList("lol", "abcdefghijklmnopqrstuvwxyz"); 
+
+   // stlhnya ini, pake import com.datastruct.MyArrayList;
    // daftar input yang dianggep invalid, langsung di-reject
-   private static final List<String> invalidInput = Arrays.asList("lol", "abcdefghijklmnopqrstuvwxyz,"); 
+   private static final MyArrayList<String> invalidInput = new MyArrayList<>(10);
+
+   static {
+      invalidInput.add("lol");
+      invalidInput.add("abcdefghijklmnopqrstuvwxyz,");
+      invalidInput.add("wtf");
+   }
 
    // constructor kosong, field udah auto-initialized
    public SpellCorrector() {
