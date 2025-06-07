@@ -112,4 +112,14 @@ public class MyArrayList <T> {
             System.out.println("]");
 		}
     }
+
+    public boolean contains(T value) {
+    for (int i = 0; i < n; i++) {
+        if (thelist[i].equals(value)) {
+            return true;
+        }
+    }
+    return false;
+    }
+
 }
