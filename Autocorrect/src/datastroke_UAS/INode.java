@@ -12,6 +12,11 @@ public interface INode {
     // buat nambah counter kata ini (dipanggil tiap ada kata yang sama)
     void incrementValue();
 
+<<<<<<< HEAD
+   // 
+   INode[] getChildren();
+=======
     // buat dapat array child node (untuk jalan ke karakter berikutnya)
     INode[] getChildren();
+>>>>>>> aaec699fa5c246804e664dd8c5e6f6d85e3e7ed7
 }

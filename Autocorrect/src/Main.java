@@ -7,6 +7,10 @@ import java.util.Scanner;
 public class Main {
    
    public static void main(String[] args) throws IOException {
+<<<<<<< HEAD
+      String dictionaryFileName = "C:\\Users\\Lyvia Reva Ruganda\\Documents\\Academics\\Code\\Java\\TrieK8_Autocorrect\\Autocorrect\\src\\notsobig.txt";
+      String inputWord = "lipayah"; // Replace with the word you want to check
+=======
 
       Scanner scanner = new Scanner(System.in); 
 
@@ -18,6 +22,7 @@ public class Main {
       System.out.print("Type something: ");
       String userInput = scanner.nextLine();  
       
+>>>>>>> aaec699fa5c246804e664dd8c5e6f6d85e3e7ed7
       ISpellCorrector corrector = new SpellCorrector();
       corrector.useDictionary(dictionaryFileName);
       String correctedWord = corrector.suggestSimilarWord(userInput);
