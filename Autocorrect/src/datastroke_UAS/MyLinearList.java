@@ -1,5 +1,5 @@
 package datastroke_UAS;
-
+//MyLinearList
 class Node<T> {
    private T data;
    private Node<T> next;

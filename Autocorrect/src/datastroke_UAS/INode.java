@@ -1,14 +1,22 @@
 // Source code is decompiled from a .class file using FernFlower decompiler.
 package datastroke_UAS;
 
+// interface buat representasi node di dalam trie
+// setiap node bisa nyimpen berapa kali kata muncul (frekuensi) 
+// dan bisa punya child node
 
 public interface INode {
-    //buat dapat nilai / frekuensi kata pada node
-   int getValue();
+    // buat dapetin berapa kali kata ini muncul (frekuensi) di dictionary  
+    int getValue();
 
-   //nambah nilai / frekuensi kata pada node
-   void incrementValue();
+    // buat nambah counter kata ini (dipanggil tiap ada kata yang sama)
+    void incrementValue();
 
+<<<<<<< HEAD
    // 
    INode[] getChildren();
+=======
+    // buat dapat array child node (untuk jalan ke karakter berikutnya)
+    INode[] getChildren();
+>>>>>>> aaec699fa5c246804e664dd8c5e6f6d85e3e7ed7
 }
