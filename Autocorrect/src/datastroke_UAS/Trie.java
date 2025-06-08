@@ -1,5 +1,7 @@
 package datastroke_UAS;
 
+import com.datastruct.MyLinearList;
+
 // implementasi utama trie 
 public class Trie implements ITrie {
    
@@ -33,19 +35,39 @@ public class Trie implements ITrie {
 
    // cari kata di trie, return nodenya kalo ketemu
    public INode find(String word) {
-      TrieNode currentNode = this.root; // mulai dari root node
+      class StackFrame {
+         TrieNode node;
+         int index;
 
-      // dari root ikutin path kata
-      for(char character : word.toCharArray()) {
-         int indeks = character - 97;
-         // kalo path ga ada, kata ga ketemu
-         if (currentNode.nodes[indeks] == null) {
-            return null;
+         StackFrame(TrieNode node, int index) {
+            this.node = node;
+            this.index = index;
          }
-         // lanjut ke node selanjutnya
-         currentNode = currentNode.nodes[indeks];
       }
-      return currentNode != null && currentNode.isEnd ? currentNode : null;  // pastiin ini beneran akhir kata, bukan cuma prefix
+
+      MyLinearList<StackFrame> stack = new MyLinearList<>();
+      stack.pushS(new StackFrame(this.root, 0));
+
+      while (!stack.isEmpty()) {
+         StackFrame frame = stack.remove();
+         TrieNode current = frame.node;
+         int index = frame.index;
+
+         if (index == word.length()) {
+            if (current != null && current.isEnd) {
+               return current;
+            }
+            continue;
+         }
+
+         char c = word.charAt(index);
+         TrieNode next = current.nodes[c - 'a'];
+         if (next != null) {
+            stack.pushS(new StackFrame(next, index + 1));
+         }
+      }
+
+      return null;
    }
 
    // hitung total node yang ada di trie
@@ -199,5 +221,8 @@ public class Trie implements ITrie {
       System.out.println(studentTrie.equals(studentTrie2) == studentTrie2.equals(studentTrie));
       studentTrie2.add("car");
       System.out.println(studentTrie.equals(studentTrie2));
+
+      System.out.println("Find 'cares': " + (studentTrie.find("cares") != null));
+      System.out.println("Find 'cart': " + (studentTrie.find("cart") != null));
    }
 }
