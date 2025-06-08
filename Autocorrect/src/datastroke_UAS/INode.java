@@ -9,5 +9,6 @@ public interface INode {
    //nambah nilai / frekuensi kata pada node
    void incrementValue();
 
+   // 
    INode[] getChildren();
 }
